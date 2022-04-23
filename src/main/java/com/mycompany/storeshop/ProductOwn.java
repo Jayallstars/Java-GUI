@@ -4,11 +4,29 @@
  */
 package com.mycompany.storeshop;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.sql.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import javax.swing.border.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.filechooser.FileFilter;
+
 /**
  *
  * @author acer
  */
 public class ProductOwn extends javax.swing.JFrame {
+    JTextField productsName;
+    JTextField productsPrice;
+    JTextField productsQty;
+    JFrame alert,upload;
+    JButton upload_image;
 
     /**
      * Creates new form ProductOwn
@@ -37,24 +55,30 @@ public class ProductOwn extends javax.swing.JFrame {
         refresh = new javax.swing.JButton();
         shopdetail = new javax.swing.JLabel();
         menu = new javax.swing.JLabel();
+        view = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
-        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setText("PRODUCT LISTS");
 
+        jTable1.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+
             },
             new String [] {
-                "ProductID", "ProductName", "ProductImage", "ProductQuantity", "ProductPrice"
+                "ProductID", "ProductName", "ProductPrice", "ProductQuantity"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
 
         add.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
@@ -120,51 +144,63 @@ public class ProductOwn extends javax.swing.JFrame {
             }
         });
 
+        view.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        view.setText("View");
+        view.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        view.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 928, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(16, Short.MAX_VALUE))
+                .addGap(29, 29, 29)
+                .addComponent(jScrollPane1)
+                .addContainerGap())
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap(262, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(415, 415, 415))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(add)
+                        .addGap(18, 18, 18)
+                        .addComponent(view)
                         .addGap(18, 18, 18)
                         .addComponent(edit)
                         .addGap(18, 18, 18)
                         .addComponent(delete)
                         .addGap(18, 18, 18)
                         .addComponent(refresh)
-                        .addGap(276, 276, 276))
+                        .addGap(239, 239, 239))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(menu, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(shopdetail)
                         .addGap(18, 18, 18)
                         .addComponent(logout)
-                        .addGap(43, 43, 43))))
+                        .addContainerGap())
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addComponent(jLabel1)
+                        .addGap(383, 383, 383))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addGap(28, 28, 28)
                 .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(29, 29, 29)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 222, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(37, 37, 37)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(add)
+                    .addComponent(view)
                     .addComponent(edit)
                     .addComponent(delete)
                     .addComponent(refresh))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 102, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 79, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(logout)
                     .addComponent(shopdetail)
@@ -176,7 +212,9 @@ public class ProductOwn extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 22, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -187,20 +225,181 @@ public class ProductOwn extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_addActionPerformed
+    public void deleteImage(String image_name){
+        Path imagesPath = Paths.get("src/main/java/com/mycompany/storeshop/images/" + image_name + ".png");
+
+        try {
+            Files.delete(imagesPath);
+            System.out.println("File "
+                    + imagesPath.toAbsolutePath().toString()
+                    + " successfully removed");
+        } catch (IOException e) {
+            System.err.println("Unable to delete "
+                    + imagesPath.toAbsolutePath().toString()
+                    + " due to...");
+            e.printStackTrace();
+        }
+    }
+
+    private void addActionPerformed(java.awt.event.ActionEvent evt) {
+        ConnectDB test = new ConnectDB();
+        SwingTester call = new SwingTester();
+        String name;
+        String price;
+        String qty;
+        String totalMoney;
+        String moneyDecrease = "";
+        productsName = new JTextField();
+        productsPrice = new JTextField();
+        productsQty = new JTextField();
+        productsName.setColumns(3);
+        Object[] fields = {
+                "<html><b style=\"font-size:10px;\">Products Name</b></html>", productsName,
+                "<html><b style=\"font-size:10px;\">Products Price</b></html>", productsPrice,
+                "<html><b style=\"font-size:10px;\">Products Quantity</b></html>", productsQty,
+        };
+        int result = JOptionPane.showConfirmDialog(null, fields, "Enter Informations", JOptionPane.OK_CANCEL_OPTION);
+        if (result == JOptionPane.OK_OPTION) {
+            name = productsName.getText();
+            price = productsPrice.getText();
+            qty = productsQty.getText();
+            totalMoney = String.valueOf(test.retriveMoney());
+            if (Integer.parseInt(totalMoney) > Integer.parseInt(price) * Integer.parseInt(qty)){
+                test.InsertDatabaseProducts(name, price, qty);
+                {
+                    Connection connect = null;
+                    try {
+                        Class.forName("org.mariadb.jdbc.Driver");
+                        connect = DriverManager.getConnection("jdbc:mariadb://localhost:3306/shop_database?&user=root&password=" +
+                                "?user=root&password=");
+                        if (connect != null) {
+                            totalMoney = String.valueOf((Integer.parseInt(totalMoney) - Integer.parseInt(price) * Integer.parseInt(qty)));
+                            moneyDecrease = String.valueOf(Integer.parseInt(price) * Integer.parseInt(qty));
+                            PreparedStatement st = connect.prepareStatement("SELECT * from products");
+                            PreparedStatement st1 = connect.prepareStatement("UPDATE shop_money SET money = "+"'"+totalMoney+"'"+"WHERE id = 1");
+                            st1.executeQuery();
+                            ResultSet result1 = st.executeQuery();
+                            DefaultTableModel tblModel = (DefaultTableModel) jTable1.getModel();
+                            ((DefaultTableModel) jTable1.getModel()).setNumRows(0);
+                            while (result1.next()) {
+                                String id_database = String.valueOf(result1.getInt("products_id"));
+                                String name_database = result1.getString("products_name");
+                                String price_database = result1.getString("products_price");
+                                String qty_database = result1.getString("products_qty");
+                                String arrayTable[] = {id_database,name_database, price_database, qty_database};
+                                jTable1.setDefaultEditor(Object.class, null);
+                                tblModel.addRow(arrayTable);
+                            }
+                            connect.close();
+                        } else {
+                            System.out.println("Database Connect Failed.");
+                        }
+                    } catch (Exception e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                }
+                call.windowShow();
+                JOptionPane.showMessageDialog(alert,"<html><b style=\"font-size:10px;\">Money Shop -" + moneyDecrease +"</b></html>");
+            } else {
+                JOptionPane.showMessageDialog(alert,"Your money is not enough.");
+            }
+        }
+    }                                   
 
     private void editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_editActionPerformed
 
     private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
-        // TODO add your handling code here:
+        DefaultTableModel modelTable = (DefaultTableModel)jTable1.getModel();
+        int selectRow = jTable1.getSelectedRow();
+        String id = modelTable.getValueAt(selectRow,0).toString();
+        int dialogButton = JOptionPane.YES_NO_OPTION;
+        int dialogResult = JOptionPane.showConfirmDialog (null, "Are you sure?","Warning",dialogButton);
+        if (dialogResult == JOptionPane.YES_OPTION){
+            modelTable.removeRow(selectRow);
+            deleteImage(id);
+            Connection connect = null;
+            try {
+                Class.forName("org.mariadb.jdbc.Driver");
+                connect =  DriverManager.getConnection("jdbc:mariadb://localhost:3306/shop_database?&user=root&password=" +
+                        "?user=root&password=");
+                if(connect != null){
+                    Statement st = connect.createStatement();
+                    Statement st2 = connect.createStatement();
+                    Statement st3 = connect.createStatement();
+                    Statement st4 = connect.createStatement();
+                    PreparedStatement st5 = connect.prepareStatement("SELECT * from products");
+                    st.executeUpdate("DELETE FROM products WHERE products_id = " + "'" + id + "'");
+                    st2.executeUpdate("SET @num :=0;");
+                    st3.executeUpdate("UPDATE products SET products_id = @num := (@num+1);");
+                    st4.executeUpdate("ALTER TABLE products AUTO_INCREMENT = 1;");
+                    ResultSet result = st5.executeQuery();
+                    DefaultTableModel tblModel = (DefaultTableModel)jTable1.getModel();
+                    ((DefaultTableModel)jTable1.getModel()).setNumRows(0);
+                    while (result.next()){
+                        String id_database = result.getString("products_id");
+                        String name_database = result.getString("products_name");
+                        String price_database = result.getString("products_price");
+                        String qty_database = result.getString("products_qty");
+                        String arrayTable [] = {id_database,name_database,price_database,qty_database};
+                        jTable1.setDefaultEditor(Object.class, null);
+                        tblModel.addRow(arrayTable);
+                    }
+                    connect.close();
+                    JOptionPane.showMessageDialog(alert, "Success! to delete data.");
+                } else {
+                    System.out.println("Database Connect Failed.");
+                }
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+            // Close
+            try {
+                if(connect != null){
+                    connect.close();
+                }
+            } catch (SQLException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+
+        }
     }//GEN-LAST:event_deleteActionPerformed
 
     private void refreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_refreshActionPerformed
-        // TODO add your handling code here:
+        Connection connect = null;
+        try {
+            Class.forName("org.mariadb.jdbc.Driver");
+            connect =  DriverManager.getConnection("jdbc:mariadb://localhost:3306/shop_database?&user=root&password=" +
+                    "?user=root&password=");
+
+            if(connect != null){
+                PreparedStatement st = connect.prepareStatement("SELECT * from products");
+                ResultSet result = st.executeQuery();
+                DefaultTableModel tblModel = (DefaultTableModel)jTable1.getModel();
+                ((DefaultTableModel)jTable1.getModel()).setNumRows(0);
+                while (result.next()){
+                    String id = result.getString("products_id");
+                    String name = result.getString("products_name");
+                    String price = result.getString("products_price");
+                    String qty = result.getString("products_qty");
+                    String arrayTable [] = {id,name,price,qty};
+                    jTable1.setDefaultEditor(Object.class, null);
+                    tblModel.addRow(arrayTable);
+                }
+                connect.close();
+            } else {
+                System.out.println("Database Connect Failed.");
+            }
+
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_refreshActionPerformed
 
     private void menuMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_menuMouseClicked
@@ -209,13 +408,25 @@ public class ProductOwn extends javax.swing.JFrame {
     }//GEN-LAST:event_menuMouseClicked
 
     private void shopdetailMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_shopdetailMouseClicked
-        
+        ConnectDB test = new ConnectDB();
+        int money = test.retriveMoney();
+        JOptionPane.showMessageDialog(alert, "<html><b style=\"font-size:10px;\">Shop Detail <br> Total money : "+ money +"</b></html>");
     }//GEN-LAST:event_shopdetailMouseClicked
 
     private void logoutMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_logoutMouseClicked
         new LoginPage().setVisible(true);
         dispose();
     }//GEN-LAST:event_logoutMouseClicked
+
+    private void viewActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewActionPerformed
+        DefaultTableModel model1 = (DefaultTableModel)jTable1.getModel();
+        int selectRowIndex = jTable1.getSelectedRow();
+        String id = model1.getValueAt(selectRowIndex,0).toString();
+        String name = model1.getValueAt(selectRowIndex, 1).toString();
+        String price = model1.getValueAt(selectRowIndex, 2).toString();
+        ImageIcon image = new ImageIcon("src/main/java/com/mycompany/storeshop/images/"+id+".png");
+        JOptionPane.showConfirmDialog(null, "<html><b style=\"font-size:10px;\">NAME : " + name + "<br>" + "PRICE : " + price + " Bath</b></html>", name, JOptionPane.PLAIN_MESSAGE, 3, image);
+    }//GEN-LAST:event_viewActionPerformed
 
     /**
      * @param args the command line arguments
@@ -264,5 +475,6 @@ public class ProductOwn extends javax.swing.JFrame {
     private javax.swing.JLabel menu;
     private javax.swing.JButton refresh;
     private javax.swing.JLabel shopdetail;
+    private javax.swing.JButton view;
     // End of variables declaration//GEN-END:variables
 }

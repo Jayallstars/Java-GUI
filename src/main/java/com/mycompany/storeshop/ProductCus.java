@@ -6,14 +6,13 @@ package com.mycompany.storeshop;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.io.IOException;
 import java.sql.*;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  *
@@ -231,16 +230,8 @@ public class ProductCus extends javax.swing.JFrame {
         String id = model1.getValueAt(selectRowIndex,0).toString();
         String name = model1.getValueAt(selectRowIndex, 1).toString();
         String price = model1.getValueAt(selectRowIndex, 2).toString();
-        try {
-            BufferedImage imageicn1 = ImageIO.read(getClass().getResource("/com/mycompany/storeshop//images/"+id+".png"));
-            ImageIcon iconsk = new ImageIcon(imageicn1);
-            JOptionPane.showConfirmDialog(null, "<html><b style=\"font-size:10px;\">NAME : " + name + "<br>" + "PRICE : " + price + " Bath</b></html>", name, JOptionPane.PLAIN_MESSAGE, 3, iconsk);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-//        JOptionPane.showMessageDialog(null, // show message array full
-//                "NAME : " + name + "\n" + "PRICE :" + price,
-//                name, JOptionPane.INFORMATION_MESSAGE,image);
+        ImageIcon image = new ImageIcon("src/main/java/com/mycompany/storeshop/images/"+id+".png");
+        JOptionPane.showConfirmDialog(null, "<html><b style=\"font-size:10px;\">NAME : " + name + "<br>" + "PRICE : " + price + " Bath</b></html>", name, JOptionPane.PLAIN_MESSAGE, 3, image);
     }//GEN-LAST:event_viewActionPerformed
 
     private void deleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteActionPerformed
@@ -266,6 +257,27 @@ public class ProductCus extends javax.swing.JFrame {
     }//GEN-LAST:event_editActionPerformed
 
     private void checkbillActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_checkbillActionPerformed
+        int money = 0;
+        ConnectDB test = new ConnectDB();
+        Connection connect = null;
+        try {
+            Class.forName("org.mariadb.jdbc.Driver");
+            connect =  DriverManager.getConnection("jdbc:mariadb://localhost:3306/shop_database?&user=root&password=" +
+                    "?user=root&password=");
+            if(connect != null){
+                PreparedStatement st = connect.prepareStatement("SELECT * from shop_money");
+                ResultSet result = st.executeQuery();
+                while (result.next()){
+                    money = result.getInt("money");
+                }
+                connect.close();
+            } else {
+                System.out.println("Database Connect Failed.");
+            }
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         DefaultTableModel modelTable = (DefaultTableModel)jTable3.getModel();
         String numdata;
         int totalPrice = 0;
@@ -277,6 +289,9 @@ public class ProductCus extends javax.swing.JFrame {
         int dialogResult = JOptionPane.showConfirmDialog (null, "<html><b style=\"font-size:10px;\">Your total price : " + numdata + " Bath <br> Yes to confirm / No to cancel</b></html>","Warning",dialogButton);
         if (dialogResult == JOptionPane.YES_OPTION){
             JOptionPane.showMessageDialog(alert, "<html><b style=\"font-size:10px;\">Thank you for shopping! <br>&nbsp;  Have a nice day.</b></html>");
+            JOptionPane.showMessageDialog(alert, "<html><b style=\"font-size:10px;\">Money Shop +" + totalPrice +"</b></html>");
+            totalPrice = money + totalPrice;
+            test.UpdateMoney(totalPrice);
         }
 
     }//GEN-LAST:event_checkbillActionPerformed
